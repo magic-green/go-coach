@@ -1,0 +1,37 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# ---------- 运行时生成 ----------
+logs/
+*.db
+*.sqlite3
+
+# ---------- KataGo 引擎（大体积二进制，用户自行下载） ----------
+# 保留 analysis_override.cfg / analysis.cfg 模板，其余全忽略
+katago/katago.exe
+katago/katago.exe.*
+katago/*.dll
+katago/*.bin.gz
+katago/*.zip
+katago/analysis_logs/
+katago/_cuda_check/
+katago/_cuda_test/
+katago/*.cfg
+katago/README.txt
+katago/cacert.pem
+!katago/analysis_override.cfg
+!katago/analysis.cfg
+
+# ---------- 内部一次性部署脚本（硬编码本机路径，不入库） ----------
+_deploy_*.py
+_deploy_*.ps1
+
+# ---------- IDE / 系统 ----------
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

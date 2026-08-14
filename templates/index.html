@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>简思围棋教室</title>
+  <link rel="stylesheet" href="./static/css/style.css?v=20260814a">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>简思围棋教室<span class="app-version" id="app-version">v1.2.0</span></h1>
+      <div class="badges">
+        <span id="engine-badge" class="badge offline">检测中</span>
+        <span id="katago-version" class="badge engine-ver">-</span>
+      </div>
+      <div class="controls">
+        <label>棋盘</label>
+        <select id="sel-size">
+          <option value="9">9路</option>
+          <option value="13">13路</option>
+          <option value="19" selected>19路</option>
+        </select>
+        <label>模式</label>
+        <select id="sel-mode">
+          <option value="hvh">人vs人</option>
+          <option value="hva" selected>人执黑vsAI</option>
+          <option value="avh">AI执黑vs人</option>
+          <option value="research">研究模式</option>
+        </select>
+        <label>等级</label>
+        <select id="sel-level">
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5" selected>5</option><option value="6">6</option>
+          <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+          <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          <option value="13">13</option><option value="15">15</option><option value="18">18</option>
+          <option value="20">20</option>
+        </select>
+        <label>算力</label>
+        <select id="sel-visits">
+          <option value="0">自动</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="300" selected>300</option>
+          <option value="500">500</option>
+        </select>
+        <button id="btn-ai-move" class="primary">AI落子</button>
+        <button id="btn-candidates" class="toggle-on">五点优选</button>
+        <button id="btn-analyze">局势分析</button>
+        <button id="btn-undo">悔棋</button>
+        <button id="btn-score">数子</button>
+        <button id="btn-review">复盘/棋谱</button>
+        <button id="btn-new">新局</button>
+        <button id="btn-help" class="ghost">使用说明</button>
+        <a href="/go-admin" class="ghost" style="text-decoration:none;font-size:13px;color:#8a7a6a;padding:6px 12px;border:1px solid #d0c8c0;border-radius:6px;background:transparent;cursor:pointer;display:inline-flex;align-items:center;" onmouseover="this.style.borderColor='#8b6b4a';this.style.color='#3a2e24'" onmouseout="this.style.borderColor='#d0c8c0';this.style.color='#8a7a6a'">管理后台</a>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="board-section">
+        <div class="board-container">
+          <canvas id="board-canvas" width="640" height="640"></canvas>
+          <div id="loading-overlay" class="loading-overlay">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="board-info">
+          <div id="status-bar" class="status-bar">
+            <span>手数 <b id="move-count">0</b></span>
+            <span>轮到 <b id="to-move">黑</b></span>
+            <span class="timer-block">
+              <span class="timer-b" id="timer-black">00:00</span>
+              <span class="timer-sep">vs</span>
+              <span class="timer-w" id="timer-white">00:00</span>
+            </span>
+          </div>
+          <div class="winrate-bar">
+            <span class="wr-label wr-black">黑 <b id="wr-black">50.0%</b></span>
+            <div class="wr-track">
+              <div class="wr-fill" id="wr-bar-fill" style="width:50%"></div>
+              <div class="wr-fill-white" id="wr-bar-fill-white" style="width:50%"></div>
+              <div class="wr-center"></div>
+            </div>
+            <span class="wr-label wr-white"><b id="wr-white">50.0%</b> 白</span>
+          </div>
+          <div id="review-bar" class="review-bar" style="display:none;">
+            <button id="btn-first" title="开局">|&lt;</button>
+            <button id="btn-prev" title="上一手">&lt;</button>
+            <span class="review-pos">0 / 0</span>
+            <button id="btn-next" title="下一手">&gt;</button>
+            <button id="btn-last" title="终局">&gt;|</button>
+            <span class="review-trial-sep"></span>
+            <button id="btn-trial" class="primary" title="在当前位置试下一手">试下</button>
+            <button id="btn-trial-return" style="display:none;" title="返回复盘">返回</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="panel moves-panel collapsible" id="panel-moves">
+          <h3 class="panel-header" data-target="panel-moves">棋谱记录 <span class="caret">▼</span></h3>
+          <div id="moves-list" class="panel-body moves-list">
+            <p class="hint">尚未落子</p>
+          </div>
+        </div>
+        <div class="panel candidates-panel collapsible" id="panel-candidates">
+          <h3 class="panel-header" data-target="panel-candidates">候选点 Top5 <span class="caret">▼</span></h3>
+          <div id="candidates" class="panel-body">
+            <p class="hint">落子后显示 AI 推荐选点</p>
+          </div>
+        </div>
+        <div class="panel collapsible" id="panel-global-trend">
+          <h3 class="panel-header" data-target="panel-global-trend">胜率 &amp; 目数 <span class="caret">▼</span></h3>
+          <div class="panel-body gt-body">
+            <div class="gt-score-bar">
+              <span class="gt-score gt-score-b">黑 <b id="gt-score-b">--</b> 目</span>
+              <span class="gt-score gt-score-sep">|</span>
+              <span class="gt-score gt-score-w">白 <b id="gt-score-w">--</b> 目</span>
+              <span id="gt-score-diff" class="gt-score-diff"></span>
+            </div>
+            <canvas id="global-trend-canvas" width="320" height="100"></canvas>
+            <p id="global-trend-hint" class="hint" style="margin-top:4px;font-size:11px;">开局后显示</p>
+          </div>
+        </div>
+        <div class="panel commentary-panel collapsible" id="panel-commentary">
+          <h3 class="panel-header" data-target="panel-commentary">AI 解说 <span class="caret">▼</span></h3>
+          <div id="commentary" class="panel-body">
+            <p class="hint">落子后自动分析并给出解说</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- 终局数子结果弹窗 -->
+  <div id="score-modal" class="modal" style="display:none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h2 id="score-title">终局数子</h2>
+      <div id="score-body" class="score-body"></div>
+      <div class="modal-actions">
+        <button id="btn-save-game" class="primary">保存棋谱</button>
+        <button id="btn-close-score">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史棋局列表弹窗 -->
+  <div id="history-modal" class="modal" style="display:none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h2>历史棋局</h2>
+      <div id="history-list" class="history-list">
+        <p class="hint">加载中...</p>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-close-history">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./static/js/board.js?v=20260814a"></script>
+  <script src="./static/js/app.js?v=20260814a"></script>
+</body>
+</html>

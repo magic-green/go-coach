@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简思围棋教室 · 管理后台</title>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; background: #f5f0eb; color: #3a2e24; min-height: 100vh; }
+a { color: #8b6b4a; text-decoration: none; }
+a:hover { color: #6b4f36; }
+
+/* ===== Header ===== */
+.header { background: linear-gradient(135deg, #3a2e24 0%, #5a4230 100%); color: #f5f0eb; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .sub { font-size: 13px; opacity: 0.7; }
+.header a { color: #d4b896; }
+.header a:hover { color: #f5f0eb; }
+
+/* ===== Layout ===== */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* ===== Cards ===== */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.card { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.card .label { font-size: 12px; color: #8a7a6a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.card .value { font-size: 28px; font-weight: 700; color: #3a2e24; }
+.card .value.green { color: #2d8a4e; }
+.card .value.red { color: #c0392b; }
+.card .value.blue { color: #2c6b9e; }
+.card .subtext { font-size: 12px; color: #8a7a6a; margin-top: 4px; }
+
+/* ===== Status Chips ===== */
+.chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.chip-green { background: #e8f5e9; color: #2d8a4e; }
+.chip-yellow { background: #fff8e1; color: #b8860b; }
+.chip-red { background: #fbe9e7; color: #c0392b; }
+.chip-gray { background: #f0eeec; color: #6b6b6b; }
+.chip-blue { background: #e3f2fd; color: #2c6b9e; }
+
+/* ===== Panels ===== */
+.panel { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 18px; overflow: hidden; }
+.panel-title { padding: 14px 18px; font-size: 15px; font-weight: 600; background: #faf8f6; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.panel-title .badge { font-size: 12px; font-weight: 400; color: #8a7a6a; }
+.panel-body { padding: 14px 18px; overflow-x: auto; }
+
+/* ===== Tables ===== */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #e8e0d8; color: #6b5b4a; font-weight: 600; white-space: nowrap; }
+td { padding: 8px 8px; border-bottom: 1px solid #f0ece8; white-space: nowrap; }
+tr:hover td { background: #faf8f6; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ===== Queue display ===== */
+.queue-empty { color: #8a7a6a; font-style: italic; }
+.queue-item { display: inline-flex; align-items: center; gap: 6px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 4px 10px; margin: 3px; font-size: 12px; }
+
+/* ===== Filters ===== */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.filters input, .filters select { padding: 6px 12px; border: 1px solid #d0c8c0; border-radius: 6px; font-size: 13px; background: #fff; }
+.filters input:focus, .filters select:focus { outline: none; border-color: #8b6b4a; }
+.btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 16px; border: 1px solid #d0c8c0; border-radius: 6px; background: #fff; font-size: 13px; cursor: pointer; color: #3a2e24; transition: all 0.15s; }
+.btn:hover { background: #f5f0eb; border-color: #8b6b4a; }
+.btn-primary { background: #8b6b4a; color: #fff; border-color: #8b6b4a; }
+.btn-primary:hover { background: #6b4f36; }
+.btn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+.btn-danger:hover { background: #a93226; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* ===== Pagination ===== */
+.pagination { display: flex; align-items: center; gap: 8px; margin-top: 10px; justify-content: center; font-size: 13px; }
+.pagination .page-btn { padding: 4px 12px; border: 1px solid #d0c8c0; border-radius: 4px; cursor: pointer; background: #fff; }
+.pagination .page-btn:hover { background: #f5f0eb; }
+.pagination .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ===== Tabs ===== */
+.tabs { display: flex; gap: 0; margin-bottom: 0; }
+.tabs .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; font-size: 14px; color: #8a7a6a; transition: all 0.15s; }
+.tabs .tab:hover { color: #3a2e24; }
+.tabs .tab.active { color: #3a2e24; border-bottom-color: #8b6b4a; font-weight: 600; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== Refresh indicator ===== */
+.refresh-bar { display: flex; align-items: center; gap: 10px; padding: 8px 18px; background: #faf8f6; border-top: 1px solid #eee; font-size: 12px; color: #8a7a6a; }
+.auto-refresh { display: flex; align-items: center; gap: 6px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.dot-green { background: #2d8a4e; }
+.dot-gray { background: #bbb; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; }
+  .header h1 { font-size: 16px; }
+  .container { padding: 12px; }
+  .cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .card .value { font-size: 22px; }
+  .panel-body { padding: 10px; }
+  table { font-size: 12px; }
+  th, td { padding: 6px 4px; }
+  .filters { flex-direction: column; align-items: stretch; }
+}
+
+/* ===== Animations ===== */
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.loading { animation: pulse 1s infinite; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>管理后台</h1>
+    <div class="sub">简思围棋教室 · 接入监控 / 访问统计 / 日志管理</div>
+  </div>
+  <div>
+    <a href="/" target="_blank">&#8592; 返回首页</a>
+    &nbsp;|&nbsp;
+    <a href="/api/stats" target="_blank">API 接口</a>
+    &nbsp;|&nbsp;
+    <span id="headerTime" class="sub"></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== Summary Cards ===== -->
+  <div class="cards" id="summaryCards">
+    <div class="card"><div class="label">请求总数</div><div class="value blue loading" id="statTotal">-</div></div>
+    <div class="card"><div class="label">错误数</div><div class="value" id="statErrors">-</div></div>
+    <div class="card"><div class="label">平均响应</div><div class="value" id="statAvgMs">-</div></div>
+    <div class="card"><div class="label">运行时长</div><div class="value" id="statUptime">-</div></div>
+    <div class="card"><div class="label">引擎调用</div><div class="value blue" id="statEngineCalls">-</div></div>
+    <div class="card"><div class="label">累计排队</div><div class="value" id="statQueueTotal">-</div></div>
+    <div class="card"><div class="label">平均等待</div><div class="value" id="statAvgWait">-</div></div>
+    <div class="card"><div class="label">引擎状态</div><div class="value" id="statEngineState">-</div></div>
+  </div>
+
+  <!-- ===== Tabs ===== -->
+  <div class="panel">
+    <div class="tabs">
+      <div class="tab active" data-tab="overview">概览</div>
+      <div class="tab" data-tab="ips">访问 IP</div>
+      <div class="tab" data-tab="endpoints">接口统计</div>
+      <div class="tab" data-tab="queue">引擎排队</div>
+      <div class="tab" data-tab="history">历史记录</div>
+      <div class="tab" data-tab="logs">日志文件</div>
+    </div>
+
+    <!-- ===== Tab: Overview ===== -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="panel-body" id="overviewContent">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+
+    <!-- ===== Tab: IPs ===== -->
+    <div class="tab-content" id="tab-ips">
+      <div class="panel-body">
+        <table><thead><tr><th>#</th><th>IP 地址</th><th class="num">请求次数</th><th class="num">错误</th><th class="num">最后活跃</th></tr></thead>
+        <tbody id="ipTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== Tab: Endpoints ===== -->
+    <div class="tab-content" id="tab-endpoints">
+      <div class="panel-body">
+        <table><thead><tr><th>#</th><th>端点</th><th class="num">调用次数</th><th class="num">错误</th><th class="num">平均耗时</th><th class="num">总耗时</th></tr></thead>
+        <tbody id="endpointTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== Tab: Queue ===== -->
+    <div class="tab-content" id="tab-queue">
+      <div class="panel-body" id="queueContent">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+
+    <!-- ===== Tab: History ===== -->
+    <div class="tab-content" id="tab-history">
+      <div class="panel-body">
+        <div class="filters">
+          <input type="text" id="filterIp" placeholder="筛选 IP..." style="width:160px">
+          <input type="text" id="filterEndpoint" placeholder="筛选端点..." style="width:160px">
+          <select id="filterLimit">
+            <option value="50">50 条</option>
+            <option value="100" selected>100 条</option>
+            <option value="500">500 条</option>
+            <option value="1000">1000 条</option>
+          </select>
+          <button class="btn" onclick="loadHistory()">&#128269; 查询</button>
+          <button class="btn" onclick="exportHistory()">&#128230; 导出 CSV</button>
+        </div>
+        <div style="max-height:600px;overflow-y:auto">
+          <table><thead><tr>
+            <th>时间</th><th>IP</th><th>端点</th><th class="num">耗时</th><th class="num">状态</th><th class="num">UA</th>
+          </tr></thead>
+          <tbody id="historyTableBody"></tbody></table>
+        </div>
+        <div class="pagination" id="historyPagination"></div>
+      </div>
+    </div>
+
+    <!-- ===== Tab: Logs ===== -->
+    <div class="tab-content" id="tab-logs">
+      <div class="panel-body">
+        <table><thead><tr><th>日期</th><th class="num">文件大小</th><th>操作</th></tr></thead>
+        <tbody id="logFilesBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== Refresh bar ===== -->
+    <div class="refresh-bar">
+      <div class="auto-refresh">
+        <span class="dot dot-green" id="refreshDot"></span>
+        <span id="refreshLabel">自动刷新中 (10s)</span>
+      </div>
+      <span>|</span>
+      <span id="lastRefreshTime">-</span>
+      <span>|</span>
+      <button class="btn btn-sm" onclick="refreshAll()">&#x21bb; 立即刷新</button>
+      <span>|</span>
+      <button class="btn btn-sm btn-danger" onclick="resetStats()">&#x26A0; 重置统计</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== State =====
+var state = { limit: 100, offset: 0, historyOffset: 0 };
+var refreshTimer = null;
+var REFRESH_INTERVAL = 10000;
+
+// ===== Init =====
+document.addEventListener("DOMContentLoaded", function() {
+  refreshAll();
+  // Tab switching
+  document.querySelectorAll(".tab").forEach(function(tab) {
+    tab.addEventListener("click", function() {
+      document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+      document.querySelectorAll(".tab-content").forEach(function(t) { t.classList.remove("active"); });
+      this.classList.add("active");
+      document.getElementById("tab-" + this.dataset.tab).classList.add("active");
+      if (this.dataset.tab === "history") loadHistory();
+      if (this.dataset.tab === "logs") loadLogFiles();
+    });
+  });
+  // Auto refresh
+  refreshTimer = setInterval(refreshAll, REFRESH_INTERVAL);
+  // Header clock
+  setInterval(function() {
+    document.getElementById("headerTime").textContent = new Date().toLocaleString("zh-CN");
+  }, 1000);
+});
+
+// ===== Refresh All =====
+function refreshAll() {
+  loadStats();
+  document.getElementById("lastRefreshTime").textContent = new Date().toLocaleTimeString("zh-CN");
+}
+
+// ===== Load Stats Snapshot =====
+function loadStats() {
+  fetch("/api/stats")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) return;
+      var s = data.stats;
+      // Summary cards
+      document.getElementById("statTotal").textContent = s.requests.total;
+      document.getElementById("statTotal").className = "value blue";
+      var errEl = document.getElementById("statErrors");
+      errEl.textContent = s.requests.errors;
+      errEl.className = "value" + (s.requests.errors > 0 ? " red" : "");
+      document.getElementById("statAvgMs").textContent = s.requests.avg_ms + "ms";
+      var up = s.uptime_s;
+      var upStr = "";
+      if (up >= 86400) { upStr += Math.floor(up/86400) + "天 "; up %= 86400; }
+      if (up >= 3600) { upStr += Math.floor(up/3600) + "时 "; up %= 3600; }
+      upStr += Math.floor(up/60) + "分 " + (up%60) + "秒";
+      document.getElementById("statUptime").textContent = upStr;
+      document.getElementById("statEngineCalls").textContent = s.engine.calls_total;
+      document.getElementById("statQueueTotal").textContent = s.engine.wait_total;
+      document.getElementById("statAvgWait").textContent = s.engine.avg_wait_ms + "ms";
+
+      // Engine state
+      var es = document.getElementById("statEngineState");
+      if (s.engine.current) {
+        es.textContent = "运行中 (" + s.engine.current.endpoint + ")";
+        es.className = "value green";
+      } else if (s.engine.queue_len > 0) {
+        es.textContent = "排队 " + s.engine.queue_len + " 人";
+        es.className = "value";
+      } else {
+        es.textContent = "空闲";
+        es.className = "value";
+      }
+
+      // Overview tab
+      var ov = document.getElementById("overviewContent");
+      var recentHtml = "<h3 style='margin-bottom:10px;font-size:14px;'>最近请求</h3><table><thead><tr><th>时间</th><th>IP</th><th>端点</th><th class=\"num\">耗时</th><th class=\"num\">状态</th></tr></thead><tbody>";
+      (s.recent || []).slice(0, 20).forEach(function(r) {
+        var t = new Date(r.ts * 1000).toLocaleTimeString("zh-CN");
+        recentHtml += "<tr><td>" + t + "</td><td>" + r.ip + "</td><td>" + r.endpoint + "</td><td class=\"num\">" + r.ms + "ms</td><td class=\"num\">" + r.status + "</td></tr>";
+      });
+      recentHtml += "</tbody></table>";
+      ov.innerHTML = recentHtml;
+
+      // IPs tab
+      var ipHtml = "";
+      (s.top_ips || []).forEach(function(r, i) {
+        ipHtml += "<tr><td>" + (i+1) + "</td><td>" + r.ip + "</td><td class=\"num\">" + r.count + "</td><td class=\"num\">" + (r.errors > 0 ? "<span style='color:#c0392b'>" + r.errors + "</span>" : "0") + "</td><td class=\"num\">" + r.last_seen_s + "s</td></tr>";
+      });
+      document.getElementById("ipTableBody").innerHTML = ipHtml;
+
+      // Endpoints tab
+      var epHtml = "";
+      (s.endpoints || []).forEach(function(r, i) {
+        epHtml += "<tr><td>" + (i+1) + "</td><td>" + r.endpoint + "</td><td class=\"num\">" + r.count + "</td><td class=\"num\">" + (r.errors > 0 ? "<span style='color:#c0392b'>" + r.errors + "</span>" : "0") + "</td><td class=\"num\">" + r.avg_ms + "ms</td><td class=\"num\">" + r.total_ms + "ms</td></tr>";
+      });
+      document.getElementById("endpointTableBody").innerHTML = epHtml;
+
+      // Queue tab
+      var q = s.engine;
+      var qHtml = "";
+      if (q.current) {
+        qHtml += "<div style='margin-bottom:12px'><strong>当前占用：</strong> " + q.current.endpoint + " | req=" + q.current.req_id + " | IP=" + q.current.ip + " | 已跑 " + q.current.run_for_ms + "ms</div>";
+      }
+      if (q.queue && q.queue.length > 0) {
+        qHtml += "<div><strong>等待队列（" + q.queue_len + " 人）：</strong></div><div style='margin-top:6px'>";
+        q.queue.forEach(function(item) {
+          qHtml += "<span class='queue-item'>" + item.endpoint + " req=" + item.req_id + " IP=" + item.ip + " 已等" + item.wait_ms + "ms</span> ";
+        });
+        qHtml += "</div>";
+      } else {
+        qHtml += "<div class='queue-empty'>&#x2714; 当前无排队</div>";
+      }
+      qHtml += "<div style='margin-top:14px;font-size:13px;color:#8a7a6a;'>累计调用: " + q.calls_total + " | 累计排队: " + q.wait_total + " | 平均等待: " + q.avg_wait_ms + "ms | 平均运行: " + q.avg_run_ms + "ms</div>";
+      document.getElementById("queueContent").innerHTML = qHtml;
+    })
+    .catch(function(e) {
+      document.getElementById("overviewContent").innerHTML = "<span style='color:#c0392b'>加载失败: " + e.message + "</span>";
+    });
+}
+
+// ===== History =====
+function loadHistory() {
+  var limit = parseInt(document.getElementById("filterLimit").value) || 100;
+  var ip = document.getElementById("filterIp").value.trim();
+  var ep = document.getElementById("filterEndpoint").value.trim();
+  var url = "/api/stats/history?limit=" + limit + "&offset=" + state.historyOffset;
+  if (ip) url += "&ip=" + encodeURIComponent(ip);
+  if (ep) url += "&endpoint=" + encodeURIComponent(ep);
+
+  document.getElementById("historyTableBody").innerHTML = "<tr><td colspan='6' class='loading'>加载中...</td></tr>";
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) { document.getElementById("historyTableBody").innerHTML = "<tr><td colspan='6' style='color:#c0392b'>错误: " + (data.error || "未知") + "</td></tr>"; return; }
+      var html = "";
+      if (data.records.length === 0) {
+        html = "<tr><td colspan='6' style='color:#8a7a6a;text-align:center'>暂无记录</td></tr>";
+      } else {
+        data.records.forEach(function(r) {
+          var t = r.ts_iso || new Date(r.ts * 1000).toLocaleString("zh-CN");
+          var statusClass = r.status >= 400 ? "chip-red" : r.status >= 300 ? "chip-yellow" : "chip-green";
+          html += "<tr><td>" + t + "</td><td>" + r.ip + "</td><td>" + r.endpoint + "</td><td class=\"num\">" + r.ms + "ms</td><td class=\"num\"><span class='chip " + statusClass + "'>" + r.status + "</span></td><td style='max-width:200px;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#8a7a6a'>" + (r.ua || "-") + "</td></tr>";
+        });
+      }
+      document.getElementById("historyTableBody").innerHTML = html;
+      document.getElementById("historyPagination").innerHTML = "共 " + data.total + " 条（limit=" + data.limit + " offset=" + data.offset + "）";
+    })
+    .catch(function(e) {
+      document.getElementById("historyTableBody").innerHTML = "<tr><td colspan='6' style='color:#c0392b'>加载失败: " + e.message + "</td></tr>";
+    });
+}
+
+function exportHistory() {
+  var limit = parseInt(document.getElementById("filterLimit").value) || 100;
+  var ip = document.getElementById("filterIp").value.trim();
+  var ep = document.getElementById("filterEndpoint").value.trim();
+  var url = "/api/stats/history?limit=" + limit + "&offset=0";
+  if (ip) url += "&ip=" + encodeURIComponent(ip);
+  if (ep) url += "&endpoint=" + encodeURIComponent(ep);
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok || !data.records) return;
+      var csv = "\uFEFF时间,IP,端点,耗时(ms),状态码,UA\n";
+      data.records.forEach(function(r) {
+        var t = r.ts_iso || new Date(r.ts * 1000).toLocaleString("zh-CN");
+        var ua = (r.ua || "").replace(/,/g, " ");
+        csv += t + "," + r.ip + "," + r.endpoint + "," + r.ms + "," + r.status + ",\"" + ua + "\"\n";
+      });
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "access_history_" + new Date().toISOString().slice(0,10) + ".csv";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    })
+    .catch(function(e) { alert("导出失败: " + e.message); });
+}
+
+// ===== Log Files =====
+function loadLogFiles() {
+  fetch("/api/stats/history?limit=1")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok || !data.files) return;
+      var html = "";
+      var hasAny = false;
+      data.files.forEach(function(f) {
+        if (!f.exists) return;
+        hasAny = true;
+        var sizeStr = f.size_bytes >= 1048576 ? (f.size_bytes/1048576).toFixed(1) + "MB" : f.size_bytes >= 1024 ? (f.size_bytes/1024).toFixed(1) + "KB" : f.size_bytes + "B";
+        html += "<tr><td>" + f.date + "</td><td class=\"num\">" + sizeStr + "</td><td><a href='/api/stats/download?date=" + f.date + "' class='btn btn-sm' download>&#128229; 下载</a></td></tr>";
+      });
+      if (!hasAny) {
+        html = "<tr><td colspan='3' style='color:#8a7a6a;text-align:center;padding:20px;'>暂无日志文件（新服务启动后会自动生成）</td></tr>";
+      }
+      document.getElementById("logFilesBody").innerHTML = html;
+    })
+    .catch(function(e) {
+      document.getElementById("logFilesBody").innerHTML = "<tr><td colspan='3' style='color:#c0392b'>加载失败: " + e.message + "</td></tr>";
+    });
+}
+
+// ===== Reset Stats =====
+function resetStats() {
+  if (!confirm("确定重置内存统计？不影响历史文件记录。")) return;
+  fetch("/api/stats/reset", { method: "POST" })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      alert(data.message || "已重置");
+      refreshAll();
+    })
+    .catch(function(e) { alert("失败: " + e.message); });
+}
+</script>
+</body>
+</html>

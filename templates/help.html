@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用说明 · 简思围棋教室 v{{ version }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-0:#0b1226;
+      --bg-1:#0f1a36;
+      --bg-2:#162547;
+      --ink-0:#f4f1ea;
+      --ink-1:#c9c4b4;
+      --ink-2:#8b867a;
+      --accent:#e94560;
+      --accent-2:#f5c16c;
+      --good:#2ecc71;
+      --wood-dark:#6b4423;
+      --wood-light:#d9a066;
+      --line:rgba(245,193,108,0.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:var(--bg-0);color:var(--ink-0);font-family:"Inter","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}
+    body{
+      background:
+        radial-gradient(1200px 600px at 85% -10%, rgba(233,69,96,0.14), transparent 60%),
+        radial-gradient(900px 500px at -10% 30%, rgba(245,193,108,0.10), transparent 60%),
+        linear-gradient(180deg, #080e20 0%, var(--bg-0) 40%, var(--bg-0) 100%);
+      min-height:100vh;
+    }
+    a{color:var(--accent-2);text-decoration:none}
+    a:hover{color:#fff;text-decoration:underline}
+    .wrap{max-width:1080px;margin:0 auto;padding:48px 32px 96px}
+    /* ---------- Top Nav ---------- */
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 32px;background:rgba(15,26,54,0.85);backdrop-filter:blur(10px);
+      position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(255,255,255,0.05)
+    }
+    .topbar .logo{font-family:"Noto Serif SC",serif;font-weight:900;font-size:18px;color:var(--ink-0);letter-spacing:1px}
+    .topbar .logo b{color:var(--accent);margin:0 4px 0 8px}
+    .topbar .nav{display:flex;gap:20px;align-items:center;font-size:13px;color:var(--ink-2)}
+    .topbar .nav a{color:var(--ink-1);padding:4px 2px;border-bottom:1px solid transparent;transition:.2s}
+    .topbar .nav a:hover{color:#fff;border-bottom-color:var(--accent);text-decoration:none}
+    .topbar .back-btn{
+      padding:8px 16px;border-radius:20px;border:1px solid var(--accent);
+      color:#fff;background:linear-gradient(135deg,var(--accent),#b42e47);font-weight:600;
+      font-size:13px;cursor:pointer;transition:.2s;
+    }
+    .topbar .back-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(233,69,96,0.35)}
+    /* ---------- Hero ---------- */
+    .hero{
+      position:relative;padding:80px 0 64px;overflow:hidden;
+      border-bottom:1px solid var(--line);margin-bottom:56px;
+    }
+    .hero::before{
+      content:"";position:absolute;inset:-40% -20% auto auto;width:700px;height:700px;border-radius:50%;
+      background:radial-gradient(circle,rgba(245,193,108,0.18),transparent 60%);
+      filter:blur(6px);
+    }
+    .eyebrow{
+      display:inline-block;padding:4px 12px;border-radius:20px;
+      border:1px solid rgba(245,193,108,0.4);color:var(--accent-2);
+      font-size:12px;letter-spacing:2px;font-weight:500;margin-bottom:18px;
+    }
+    .hero h1{
+      font-family:"Noto Serif SC",serif;font-weight:900;font-size:54px;line-height:1.15;
+      letter-spacing:2px;margin-bottom:18px;
+      background:linear-gradient(120deg,#fff 40%,var(--accent-2) 70%,var(--accent) 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero h1 .dot{color:var(--accent);display:inline-block;animation:blink 2.5s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+    .hero .subtitle{font-size:18px;color:var(--ink-1);max-width:720px;line-height:1.9}
+    .hero .meta{
+      display:flex;gap:24px;margin-top:36px;flex-wrap:wrap;
+    }
+    .meta .chip{
+      padding:10px 18px;border-radius:12px;background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);font-size:13px;color:var(--ink-1);
+    }
+    .meta .chip b{color:#fff;font-weight:600;margin-right:6px}
+    /* ---------- Sections ---------- */
+    section{margin-bottom:72px;scroll-margin-top:80px}
+    h2.section-title{
+      font-family:"Noto Serif SC",serif;font-weight:700;font-size:30px;margin-bottom:20px;
+      padding-left:14px;border-left:4px solid var(--accent);color:#fff;letter-spacing:1px;
+    }
+    h2.section-title .en{
+      display:block;font-family:"Inter",sans-serif;font-weight:300;
+      font-size:12px;color:var(--ink-2);letter-spacing:3px;margin-top:4px;text-transform:uppercase;
+    }
+    .lede{font-size:16px;color:var(--ink-1);line-height:1.9;margin-bottom:28px;max-width:860px}
+    /* ---------- Feature Cards ---------- */
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .feat{
+      padding:24px;border-radius:16px;background:linear-gradient(160deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.07);transition:.25s;position:relative;overflow:hidden
+    }
+    .feat:hover{transform:translateY(-3px);border-color:rgba(245,193,108,0.3)}
+    .feat .ic{
+      width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      font-size:22px;margin-bottom:14px;
+      background:linear-gradient(135deg,rgba(233,69,96,0.25),rgba(245,193,108,0.15));
+    }
+    .feat h3{font-size:16px;color:#fff;margin-bottom:8px;font-weight:600}
+    .feat p{font-size:13px;color:var(--ink-2);line-height:1.7}
+    /* ---------- How to use (timeline) ---------- */
+    .steps{counter-reset:step;display:grid;gap:18px}
+    .step{
+      display:grid;grid-template-columns:64px 1fr;gap:20px;align-items:flex-start;
+      padding:22px;border-radius:14px;background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.06)
+    }
+    .step::before{
+      counter-increment:step;content:"0" counter(step);
+      display:flex;align-items:center;justify-content:center;
+      width:54px;height:54px;border-radius:16px;
+      background:linear-gradient(135deg,var(--accent),#8d2838);
+      color:#fff;font-family:"Noto Serif SC",serif;font-weight:900;font-size:20px;
+      box-shadow:0 8px 22px rgba(233,69,96,0.3);
+    }
+    .step h4{font-size:16px;color:#fff;margin-bottom:6px;font-weight:600}
+    .step p{font-size:13.5px;color:var(--ink-1);line-height:1.8}
+    .step code{
+      background:rgba(245,193,108,0.12);color:var(--accent-2);
+      padding:1px 6px;border-radius:4px;font-size:12px;
+      font-family:"JetBrains Mono",Consolas,monospace;
+    }
+    /* ---------- Architecture Diagram ---------- */
+    .arch{
+      padding:32px;border-radius:20px;
+      background:
+        linear-gradient(160deg,rgba(22,37,71,0.9),rgba(15,26,54,0.95));
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .flow{
+      display:flex;align-items:stretch;gap:12px;flex-wrap:wrap;margin-top:8px;
+    }
+    .node{
+      flex:1 1 170px;padding:18px 16px;border-radius:12px;
+      background:rgba(8,14,32,0.6);border:1px solid rgba(255,255,255,0.08);
+      position:relative;min-height:140px;display:flex;flex-direction:column;gap:10px;
+    }
+    .node .tag{
+      display:inline-block;font-size:10px;font-weight:600;letter-spacing:1.5px;
+      padding:3px 8px;border-radius:6px;width:fit-content;
+    }
+    .tag.rule{background:rgba(46,204,113,0.15);color:var(--good)}
+    .tag.ai{background:rgba(233,69,96,0.15);color:var(--accent)}
+    .tag.gpu{background:rgba(245,193,108,0.15);color:var(--accent-2)}
+    .tag.ux{background:rgba(52,152,219,0.15);color:#4da3e7}
+    .node h5{font-size:14px;color:#fff;font-weight:600}
+    .node ul{list-style:none;display:flex;flex-direction:column;gap:4px;flex:1}
+    .node li{font-size:12px;color:var(--ink-1);line-height:1.5;padding-left:12px;position:relative}
+    .node li::before{content:"·";position:absolute;left:2px;color:var(--accent);font-weight:700}
+    .arrow{
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;color:var(--accent-2);flex:0 0 32px;
+      animation:slideR 2s infinite ease-in-out;
+    }
+    @keyframes slideR{0%,100%{transform:translateX(0);opacity:.6}50%{transform:translateX(4px);opacity:1}}
+    /* ---------- Hardware Box ---------- */
+    .hw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:10px}
+    .hw{
+      padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,0.07);
+      background:linear-gradient(160deg,rgba(245,193,108,0.06),rgba(255,255,255,0.02));
+    }
+    .hw .k{font-size:12px;color:var(--ink-2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+    .hw .v{font-size:16px;color:#fff;font-weight:600}
+    .hw .v small{color:var(--ink-2);font-weight:400;font-size:12px;margin-left:4px}
+    /* ---------- Footer ---------- */
+    footer{
+      margin-top:80px;padding-top:32px;border-top:1px solid var(--line);
+      display:flex;justify-content:space-between;color:var(--ink-2);font-size:12px;flex-wrap:wrap;gap:12px
+    }
+    footer a:hover{color:#fff;text-decoration:underline}
+    /* ---------- Mobile ---------- */
+    @media (max-width:720px){
+      .wrap{padding:24px 16px 60px}
+      .topbar{padding:12px 16px}
+      .topbar .nav{display:none}
+      .hero{padding:40px 0 36px}
+      .hero h1{font-size:36px}
+      .step{grid-template-columns:1fr;gap:14px}
+      .arch{padding:18px}
+      .arrow{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="logo">围棋<b>AI</b>智能教练<span style="color:var(--ink-2);font-weight:300;font-size:12px;margin-left:8px">v{{ version }}</span></div>
+  <div class="nav">
+    <a href="#intro">项目介绍</a>
+    <a href="#features">核心功能</a>
+    <a href="#howto">使用指南</a>
+    <a href="#arch">架构原理</a>
+    <a href="#spec">硬件配置</a>
+  </div>
+  <button class="back-btn" onclick="window.close() || (location.href='./')">← 返回对弈</button>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <span class="eyebrow">GO · AI · COACH</span>
+    <h1>你的私人围棋<br>AI 智能教练<span class="dot">.</span></h1>
+    <p class="subtitle">
+      由 <b style="color:#fff">KataGo</b>（CUDA GPU 加速）驱动职业级分析，
+      配合本地 Qwen2.5-7B 大模型进行教学口吻润色。
+      从<strong style="color:var(--good)">妙手</strong>点评到<strong style="color:var(--accent-2)">五分区势力</strong>解读，
+      让你每一步都知其然、亦知其所以然。
+    </p>
+    <div class="meta">
+      <span class="chip"><b>引擎</b>KataGo v1.17.1 · CUDA GPU</span>
+      <span class="chip"><b>模型</b>kata1-b28c512nbt</span>
+      <span class="chip"><b>大模型</b>Ollama · Qwen2.5:7B-32K</span>
+      <span class="chip"><b>棋盘</b>9 / 13 / 19 路</span>
+      <span class="chip"><b>等级</b>1 ~ 20 级可调</span>
+    </div>
+  </section>
+
+  <!-- 01 项目介绍 -->
+  <section id="intro">
+    <h2 class="section-title">
+      01 · 项目介绍
+      <span class="en">Project Introduction</span>
+    </h2>
+    <p class="lede">
+      本项目专为<b style="color:#fff">入门 ~ 业余 3 段</b>的围棋爱好者量身打造：
+      它不只是一个「AI 对弈软件」，更是一个<b style="color:var(--accent-2)">会讲解、会点评、会教学</b>的一对一智能教练。
+      相比传统围棋程序冷冰冰的胜率数字，我们把 KataGo 的职业级分析能力 + 本地 LLM 的自然语言能力结合起来，
+      用「规则模板 + LLM 润色」的混合架构，确保每一条解说<b style="color:var(--good)">坐标不瞎编、数值不造假、语气像真人老师</b>。
+    </p>
+  </section>
+
+  <!-- 02 核心功能 -->
+  <section id="features">
+    <h2 class="section-title">
+      02 · 核心功能
+      <span class="en">Core Features</span>
+    </h2>
+    <div class="feature-grid">
+      <div class="feat">
+        <div class="ic">⚫</div>
+        <h3>网页棋盘 & 人机对弈</h3>
+        <p>响应式 Canvas 棋盘，支持 9 / 13 / 19 路三种规格，落子、提子、打劫、禁入点规则 100% 准确。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">🅰️</div>
+        <h3>ABCDE 五点优选</h3>
+        <p>每步棋给出 KataGo 前 5 候选点（A=首选 / E=第5选），支持一键隐藏/显示，附带坐标语义策略标签。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">📈</div>
+        <h3>10 步推演 + 胜率趋势</h3>
+        <p>对任一候选点进行 10 步深度推演（maxVisits=500，约 5 秒），沿 PV 逐步重分析并绘制胜率趋势折线图。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">🧭</div>
+        <h3>五分区势力格局</h3>
+        <p>基于 KataGo ownership 数据，计算左上 / 右上 / 左下 / 右下 / 中央 5 个区域的势力平均与主导方。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">⭐</div>
+        <h3>妙手 / 本手 / 俗手 / 恶手</h3>
+        <p>每手棋根据胜率变化 Δ 自动评级（棋盘上只保留最新一手的质量圈），底部同时显示黑白双方最近一次点评。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">🧠</div>
+        <h3>AI 教学口吻解说</h3>
+        <p>规则模板 0ms 生成事实性草稿，Ollama + Qwen2.5:7B 异步润色为自然教学语言，含请求 ID + 超时保护。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">🤔</div>
+        <h3>AI 思考方式剖析</h3>
+        <p>对比策略网络先验（直觉）vs MCTS 搜索结果（验证），帮你理解「AI 一眼就看好的点」vs「搜索挖到的盲点」。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">📜</div>
+        <h3>复盘 / 棋谱存档</h3>
+        <p>终局中国规则数子裁判，棋局 SQLite 本地存档，历史棋局列表支持一键复盘、逐步回放。</p>
+      </div>
+      <div class="feat">
+        <div class="ic">💚</div>
+        <h3>显存友好 · 按需启停</h3>
+        <p>KataGo 懒启动 + 5 分钟无操作自动休眠；Ollama 模型 keep-alive 5m 自动卸载。RTX 3060 6GB 友好。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 使用指南 -->
+  <section id="howto">
+    <h2 class="section-title">
+      03 · 使用指南
+      <span class="en">How to Use</span>
+    </h2>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h4>设置棋盘 & 模式</h4>
+          <p>顶栏选择棋盘大小 <code>9 / 13 / 19</code> 路，对战模式选择 <code>人执黑 vs AI</code> 或 <code>AI 执黑 vs 人</code>。
+          「等级」下拉设置 AI 对手强度，「算力」控制 KataGo 每步最大搜索次数（自动 / 50 / 100 / 200 / 300 / 500）。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>开始对弈</h4>
+          <p>点击棋盘空位即可落子。人机模式下 AI 会自动应一手。点击 <strong style="color:#fff">「悔棋」</strong> 可撤回一手，
+            <strong style="color:#fff">「新局」</strong> 清空棋盘重新开始。顶栏 <strong style="color:#fff">「ABCDE 优选」</strong> 按钮控制是否在棋盘上显示绿色渐变候选点标记（A=首选）。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>进入局势分析模式</h4>
+          <p>点击顶栏红色 <strong style="color:var(--accent)">「局势分析」</strong> 按钮，侧栏展开并加载 AI 解说。
+            此时：① 候选点 Top5 列表出现（点击可触发 10 步推演）② 推演胜率趋势图开始渲染 ③ AI 解说包含局势判断 + 势力格局 + 策略建议。再次点击退出分析模式。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>看懂 10 步推演</h4>
+          <p>侧栏点击任一候选点 → 棋盘上出现带 1~10 数字的未来棋子序列（黑底白字 / 白底黑字），
+            同时下方 Canvas 异步加载胜率趋势折线。<strong style="color:#fff">绿段</strong> 代表黑方占优阶段，
+            <strong style="color:var(--accent)">红段</strong> 代表白方占优阶段，起点 + Δ 胜率标注帮助判断变化手。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>终局数子 & 复盘</h4>
+          <p>点击 <strong style="color:#fff">「数子」</strong> 按钮按中国规则估算双方目数 + 贴目，弹窗显示胜负。
+            点击 <strong style="color:#fff">「复盘/棋谱」</strong>：有棋局时进入复盘模式（底部出现 ⏮ ⏭ 导航条）；无棋局时打开历史棋局列表。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 架构原理 -->
+  <section id="arch">
+    <h2 class="section-title">
+      04 · 架构原理
+      <span class="en">System Architecture</span>
+    </h2>
+    <p class="lede">
+      核心设计理念：<strong style="color:var(--good)">规则保证事实准确，LLM 负责自然语言润色</strong>。
+      所有坐标、胜率、势力数值由规则模板 100% 准确生成后，再交给本地大模型"翻译成老师口吻"—— 既杜绝 AI 瞎编坐标，又避免规则模板像在读说明书。
+    </p>
+    <div class="arch">
+      <div class="flow">
+        <div class="node">
+          <span class="tag ux">FRONTEND</span>
+          <h5>① 用户落子</h5>
+          <ul>
+            <li>Canvas 棋盘渲染</li>
+            <li>ABCDE 候选点标记</li>
+            <li>10 步推演数字 + 趋势图</li>
+            <li>侧栏折叠 + 状态徽章</li>
+          </ul>
+        </div>
+        <div class="arrow">➜</div>
+        <div class="node">
+          <span class="tag gpu">KATAGO</span>
+          <h5>② 职业级分析</h5>
+          <ul>
+            <li>winrate / scoreLead（黑视角）</li>
+            <li>ownership 势力分布</li>
+            <li>policy 策略网络先验</li>
+            <li>PV 搜索树变化序列</li>
+          </ul>
+        </div>
+        <div class="arrow">➜</div>
+        <div class="node">
+          <span class="tag rule">RULES</span>
+          <h5>③ 事实性草稿</h5>
+          <ul>
+            <li>五分区势力描述</li>
+            <li>选点对比定性结论</li>
+            <li>坐标语义（挂角/守角/夹攻）</li>
+            <li>妙手/俗手胜率 Δ 评级</li>
+          </ul>
+        </div>
+        <div class="arrow">➜</div>
+        <div class="node">
+          <span class="tag ai">LLM</span>
+          <h5>④ 教学口吻润色</h5>
+          <ul>
+            <li>Ollama · Qwen2.5:7B-32K</li>
+            <li>请求 ID 防覆盖</li>
+            <li>15 秒超时保护</li>
+            <li>Hash 缓存避免重复推理</li>
+          </ul>
+        </div>
+        <div class="arrow">➜</div>
+        <div class="node">
+          <span class="tag ux">UX</span>
+          <h5>⑤ 解说呈现</h5>
+          <ul>
+            <li>总结 + 选点判断</li>
+            <li>势力格局 · AI 思考方式</li>
+            <li>策略建议（含阶段提示）</li>
+            <li>黑白双方便签 · 侧边滚动</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 技术 & 硬件 -->
+  <section id="spec">
+    <h2 class="section-title">
+      05 · 运行环境
+      <span class="en">Tech Stack & Hardware</span>
+    </h2>
+    <p class="lede">
+      本项目部署在本地 Windows 主机上，为适配 <b style="color:#fff">RTX 3060 6GB</b> 显存做了大量优化：
+      所有可调节参数（maxVisits、Ollama 上下文、KataGo 自动休眠）都可以按需调整，避免显存溢出。
+    </p>
+    <div class="hw-grid">
+      <div class="hw">
+        <div class="k">GPU</div>
+        <div class="v">RTX 3060 6GB <small>（建议 maxVisits ≤ 500）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">内存</div>
+        <div class="v">32 GB <small>（KataGo + Ollama 并行友好）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">后端</div>
+        <div class="v">Python 3.13 · Flask <small>（REST API）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">前端</div>
+        <div class="v">原生 Canvas + JS <small>（零框架 · 快速加载）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">AI 引擎</div>
+        <div class="v">KataGo v1.17.1 <small>（CUDA 13.1 GPU backend）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">本地 LLM</div>
+        <div class="v">Ollama · Qwen2.5:7B-32K <small>（keep-alive 5m 自动卸载）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">数据存储</div>
+        <div class="v">SQLite <small>（棋局存档 games.db）</small></div>
+      </div>
+      <div class="hw">
+        <div class="k">公网部署</div>
+        <div class="v">Cloudflare Tunnel <small>（HTTPS + 无需端口映射）</small></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 简思围棋教室 · v{{ version }} · 用 ♥ 为棋友打造</div>
+    <div>
+      <a href="#top">回到顶部 ↑</a>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -50,13 +50,25 @@ pip install -r requirements.txt
 
 ### 2. 放入 KataGo 引擎（可选）
 
-将以下文件放入 `katago/` 目录：
+**推荐：一键下载脚本**（自动拉取引擎 + 模型到 `katago/` 目录，幂等可重复运行）：
 
-| 文件 | 说明 |
+```powershell
+# CPU（Eigen）版，开箱即用，无需 CUDA 依赖
+powershell -ExecutionPolicy Bypass -File scripts\download_katago.ps1
+
+# CUDA 版（需 NVIDIA GPU + CUDA 驱动），速度约为 CPU 3~5 倍
+powershell -ExecutionPolicy Bypass -File scripts\download_katago.ps1 -Build cuda
+```
+
+也可手动下载后放入 `katago/` 目录：
+
+| 文件 | 来源 |
 |------|------|
-| `katago.exe` | KataGo analysis 模式可执行文件（推荐 CUDA 版，速度是 CPU 3~5 倍）|
-| `kata1-b28c512nbt.bin.gz` | 模型权重（日常教学/工具站最合适，速度快 + Elo 14110 足够）|
-| `analysis_override.cfg` | 配置模板（内部 include `default_gtp.cfg`），可设置 `backend=cuda` / `backend=eigen` |
+| `katago.exe` | KataGo 官方发布页（选 `eigen` 或 `cuda12.1-cudnn8.9.7` 的 `windows-x64` 包）：https://github.com/lightvector/KataGo/releases |
+| `kata1-b28c512nbt.bin.gz` | KataGo 训练站模型下载（`kata1-b28c512nbt`，日常教学最合适，Elo ~14110）：https://katagotraining.org/networks/ |
+| `analysis_override.cfg` | 已随仓库提供，保留 `katago/` 下默认即可 |
+
+> KataGo 引擎二进制较大（含 CUDA/cuDNN 依赖可达 3.5 GB+），因此不随仓库分发；下载到 `katago/` 后由代码自动检测启用。
 
 未放入引擎时，系统自动启用 **Mock 模式**，返回模拟数据，可用于纯 UI/解说/存档流程调试。
 
@@ -115,7 +127,9 @@ go-coach/
 ├── game_db.py              # SQLite 棋谱存档 CRUD
 ├── core_logger.py          # 统一日志（控制台 + 文件）、阶段计时、request_id
 ├── requirements.txt
-├── katago/                 # KataGo 引擎目录
+├── scripts/
+│   └── download_katago.ps1 # 一键下载 KataGo 引擎 + 模型到 katago/（eigen/cuda 可选）
+├── katago/                 # KataGo 引擎目录（脚本下载或手动放入，不入库）
 │   ├── katago.exe
 │   ├── kata1-b28c512nbt.bin.gz
 │   ├── default_gtp.cfg
